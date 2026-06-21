@@ -51,9 +51,13 @@ class Settings:
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "postgres")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "kyrgpulse_db")
-    DATABASE_URL: str = (
-        os.getenv("DATABASE_URL")
-        or f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+    # Render/Heroku give postgres:// or postgresql://, asyncpg needs postgresql+asyncpg://
+    _raw_db_url: str = os.getenv("DATABASE_URL", "")
+    if _raw_db_url:
+        _raw_db_url = _raw_db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+        _raw_db_url = _raw_db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    DATABASE_URL: str = _raw_db_url or (
+        f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
         f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
     )
 
