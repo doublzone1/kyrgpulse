@@ -1,0 +1,16 @@
+from loguru import logger
+import sys
+from config.settings import settings
+
+logger.remove()
+logger.add(
+    sys.stderr,
+    format="<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan> | {message}",
+    level="INFO"
+)
+logger.add(
+    settings.DATA_DIR / "logs.log",
+    rotation="10 MB",
+    retention="7 days",
+    level="DEBUG"
+)

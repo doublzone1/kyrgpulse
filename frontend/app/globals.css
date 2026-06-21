@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================================
+   KyrgPulse design tokens
+   --pulse-*  : teal — основной акцент (живой, не "demo cyan")
+   --ember-*  : amber — для важного и premium-сегмента
+   --ridge-*  : нейтральный тёмно-серый фон, без подтона
+   ========================================================================= */
+@layer base {
+  :root {
+    /* Тёмный нейтральный фон */
+    --ridge-950: 9 9 11;         /* #09090b */
+    --ridge-900: 24 24 27;       /* #18181b */
+    --ridge-800: 39 39 42;       /* #27272a */
+    --ridge-700: 63 63 70;       /* #3f3f46 */
+
+    /* Основной акцент: teal */
+    --pulse-300: 94 234 212;     /* #5eead4 */
+    --pulse-400: 45 212 191;     /* #2dd4bf */
+    --pulse-500: 20 184 166;     /* #14b8a6 — primary */
+    --pulse-600: 13 148 136;     /* #0d9488 */
+
+    /* Янтарный акцент — для CTA, премиум, выделений */
+    --ember-300: 252 211 77;     /* #fcd34d */
+    --ember-400: 251 191 36;     /* #fbbf24 */
+    --ember-500: 245 158 11;     /* #f59e0b */
+    --ember-600: 217 119 6;      /* #d97706 */
+
+    --foreground: 245 245 244;
+  }
+}
+
+body {
+  @apply bg-[rgb(var(--ridge-950))] text-[rgb(var(--foreground))];
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* ---------- Типографика ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-display {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* Цены и числовые показатели — табличный моно с tabular-nums */
+.font-numeric {
+  font-family: var(--font-space-grotesk), ui-monospace, "JetBrains Mono",
+    "SF Mono", monospace;
+  font-feature-settings: "tnum", "lnum";
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Стеклянная карточка ---------- */
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(39, 39, 42, 0.78) 0%,
+    rgba(24, 24, 27, 0.78) 100%
+  );
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(45, 212, 191, 0.10);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 10px 30px -20px rgba(0, 0, 0, 0.7);
+}
+
+.glass-hover {
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.glass-hover:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(63, 63, 70, 0.86) 0%,
+    rgba(39, 39, 42, 0.86) 100%
+  );
+  border-color: rgba(45, 212, 191, 0.30);
+}
+
+/* Логотип / hero — teal → amber градиент */
+.neon-text {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--pulse-300)) 0%,
+    rgb(var(--pulse-500)) 50%,
+    rgb(var(--ember-400)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Фон главной — нейтральный тёмный с мягким teal-сиянием сверху и amber снизу */
+.mountain-bg {
+  background:
+    radial-gradient(
+      ellipse 120% 60% at 50% -10%,
+      rgba(20, 184, 166, 0.08) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 80% 100%,
+      rgba(245, 158, 11, 0.04) 0%,
+      transparent 60%
+    ),
+    rgb(var(--ridge-950));
+}
+
+/* ---------- Pulse / ECG ---------- */
+.pulse-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgb(var(--pulse-400));
+  box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.55);
+  animation: pulse-beat 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse-beat {
+  0%   { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.55); }
+  60%  { box-shadow: 0 0 0 10px rgba(45, 212, 191, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
+}
+
+.ecg-line {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(45, 212, 191, 0.14) 30%,
+    rgba(45, 212, 191, 0.14) 70%,
+    transparent 100%
+  );
+  overflow: hidden;
+}
+
+.ecg-stroke {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(45, 212, 191, 0) 35%,
+    rgba(45, 212, 191, 0.95) 50%,
+    rgba(45, 212, 191, 0) 65%,
+    transparent 100%
+  );
+  animation: ecg-sweep 3.2s linear infinite;
+}
+
+@keyframes ecg-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.price-pulse {
+  animation: price-rhythm 2.8s ease-in-out infinite;
+}
+
+@keyframes price-rhythm {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50%      { text-shadow: 0 0 14px rgba(45, 212, 191, 0.20); }
+}
+
+/* ---------- Скроллбар ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--ridge-900));
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(45, 212, 191, 0.20);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 212, 191, 0.36);
+}
+
+::selection {
+  background: rgba(45, 212, 191, 0.32);
+  color: rgb(var(--foreground));
+}
+
+/* ---------- Leaflet ---------- */
+.leaflet-container {
+  background: rgb(var(--ridge-900)) !important;
+  border-radius: 0.5rem;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgb(var(--ridge-800)) !important;
+  color: rgb(var(--foreground)) !important;
+  border: 1px solid rgba(45, 212, 191, 0.20);
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgb(var(--ridge-800)) !important;
+  color: rgb(var(--foreground)) !important;
+  border-color: rgba(45, 212, 191, 0.20) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: rgb(var(--ridge-700)) !important;
+}

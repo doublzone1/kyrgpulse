@@ -1,0 +1,40 @@
+{
+  "name": "KyrgPulse — аренда квартир в Бишкеке",
+  "short_name": "KyrgPulse",
+  "description": "Поиск и аналитика аренды квартир в Бишкеке: lalafo.kg и house.kg",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d14",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Поиск квартир",
+      "short_name": "Поиск",
+      "url": "/search",
+      "description": "Найти квартиру в аренду"
+    },
+    {
+      "name": "Аналитика",
+      "short_name": "Графики",
+      "url": "/dashboard",
+      "description": "Цены и статистика"
+    }
+  ],
+  "categories": ["lifestyle", "utilities"],
+  "lang": "ru"
+}

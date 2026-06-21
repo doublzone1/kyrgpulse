@@ -1,0 +1,110 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kyrgpulse-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kyrgpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kyrgpulse123}
+      POSTGRES_DB: ${POSTGRES_DB:-kyrgpulse_db}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kyrgpulse -d kyrgpulse_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: kyrgpulse-redis
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+
+  backend:
+    build: ./backend
+    container_name: kyrgpulse-backend
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kyrgpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kyrgpulse123}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-kyrgpulse_db}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      CITY: ${CITY:-bishkek}
+      MAX_PAGES: ${MAX_PAGES:-10}
+      HEADLESS: ${HEADLESS:-true}
+      SLOW_MO: ${SLOW_MO:-800}
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}"
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery-worker:
+    build: ./backend
+    container_name: kyrgpulse-celery-worker
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kyrgpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kyrgpulse123}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-kyrgpulse_db}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      CITY: ${CITY:-bishkek}
+      MAX_PAGES: ${MAX_PAGES:-10}
+      HEADLESS: ${HEADLESS:-true}
+      SLOW_MO: ${SLOW_MO:-800}
+    command: celery -A tasks worker --loglevel=info
+    depends_on:
+      - backend
+      - redis
+    restart: unless-stopped
+
+  celery-beat:
+    build: ./backend
+    container_name: kyrgpulse-celery-beat
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kyrgpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kyrgpulse123}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-kyrgpulse_db}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      CITY: ${CITY:-bishkek}
+      MAX_PAGES: ${MAX_PAGES:-10}
+      HEADLESS: ${HEADLESS:-true}
+      SLOW_MO: ${SLOW_MO:-800}
+    command: celery -A tasks beat --loglevel=info
+    depends_on:
+      - celery-worker
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: kyrgpulse-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      - API_INTERNAL_URL=http://backend:8000/api
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
