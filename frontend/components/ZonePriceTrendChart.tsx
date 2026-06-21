@@ -120,10 +120,17 @@ export default function ZonePriceTrendChart() {
                 borderRadius: "8px",
                 fontSize: "12px",
               }}
-              formatter={(value: number | null, name: string) => [
-                value != null ? `${value.toLocaleString("ru-RU")} KGS` : "—",
-                ZONE_LABELS[name] || name,
-              ]}
+              formatter={(value: number | string | null, name: string) => {
+                const num =
+                  value == null ? null
+                  : typeof value === "number" ? value
+                  : value === "" ? null
+                  : Number(value);
+                return [
+                  num != null && !Number.isNaN(num) ? `${num.toLocaleString("ru-RU")} KGS` : "—",
+                  ZONE_LABELS[name] || name,
+                ];
+              }}
               labelFormatter={(label: string) => `Неделя: ${label}`}
             />
             <Legend
