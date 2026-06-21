@@ -120,12 +120,9 @@ export default function ZonePriceTrendChart() {
                 borderRadius: "8px",
                 fontSize: "12px",
               }}
-              formatter={(value: number | string | null, name: string) => {
-                const num =
-                  value == null ? null
-                  : typeof value === "number" ? value
-                  : value === "" ? null
-                  : Number(value);
+              formatter={(value: unknown, name: string) => {
+                const raw = Array.isArray(value) ? value[0] : value;
+                const num = raw == null ? null : Number(raw);
                 return [
                   num != null && !Number.isNaN(num) ? `${num.toLocaleString("ru-RU")} KGS` : "—",
                   ZONE_LABELS[name] || name,
