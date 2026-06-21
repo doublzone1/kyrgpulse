@@ -65,8 +65,8 @@ export default function SeasonalityChart() {
                 borderRadius: "8px",
                 fontSize: "12px",
               }}
-              formatter={(value: number, _: string, entry: { payload: { count: number } }) => [
-                `${value.toLocaleString("ru-RU")} KGS (${entry.payload.count} объявл.)`,
+              formatter={(value: number, _: string, entry: any) => [
+                `${value.toLocaleString("ru-RU")} KGS (${entry?.payload?.count ?? 0} объявл.)`,
                 "Средняя цена",
               ]}
             />
